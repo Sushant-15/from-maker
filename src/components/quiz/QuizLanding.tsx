@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getQuizPublicState, startAttempt, getCurrentQuestion } from '@/app/actions/participant';
+import { getQuizPublicState, startAttempt, getQuizData } from '@/app/actions/participant';
 import { formatCountdown, getQuizState } from '@/lib/utils';
 import type { PublicQuizInfo } from '@/types';
 
@@ -33,7 +33,7 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
       try {
         const { attemptId } = JSON.parse(stored);
         // Validate with server
-        getCurrentQuestion(attemptId).then(result => {
+        getQuizData(attemptId).then(result => {
           if (!('error' in result)) {
             // Resume: store question data and redirect
             localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(result));
@@ -84,7 +84,7 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
       attemptId: result.attemptId,
       quizSlug: slug,
     }));
-    localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(result.firstQuestion));
+    localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(result.quizData));
 
     router.push(`/quiz/${slug}/attempt`);
   };

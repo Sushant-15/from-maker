@@ -107,6 +107,15 @@ export interface CurrentQuestionResponse {
   isLastQuestion: boolean;
 }
 
+export interface AllQuestionsResponse {
+  attemptId: string;
+  questions: {
+    question: PublicQuestion;
+    options: PublicOption[];
+  }[];
+  currentIndex: number;
+}
+
 export interface AttemptResult {
   participantName: string;
   score: number;

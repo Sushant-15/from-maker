@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { submitAnswer, timeoutQuestion, getCurrentQuestion, logIntegrityEvent } from '@/app/actions/participant';
+import { submitAnswer, timeoutQuestion, logIntegrityEvent } from '@/app/actions/participant';
 import { getTimerState } from '@/lib/utils';
-import type { CurrentQuestionResponse } from '@/types';
+import type { AllQuestionsResponse } from '@/types';
 
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -13,29 +13,31 @@ export default function AttemptPage() {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [questionData, setQuestionData] = useState<CurrentQuestionResponse | null>(null);
+  const [quizData, setQuizData] = useState<AllQuestionsResponse | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [confirmed, setConfirmed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [msRemaining, setMsRemaining] = useState(0);
   const [loading, setLoading] = useState(true);
   const [animKey, setAnimKey] = useState(0);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const attemptIdRef = useRef<string>('');
+  const questionStartTimeRef = useRef<number>(Date.now());
 
-  // Load question data from localStorage (set by landing page)
+  // Load quiz data from localStorage (set by landing page)
   useEffect(() => {
     const stored = localStorage.getItem(`quiz_current_${slug}`);
-    const attemptStored = localStorage.getItem(`quiz_attempt_${slug}`);
 
-    if (stored && attemptStored) {
+    if (stored) {
       try {
-        const data: CurrentQuestionResponse = JSON.parse(stored);
-        const { attemptId } = JSON.parse(attemptStored);
-        attemptIdRef.current = attemptId;
-        setQuestionData(data);
-        setMsRemaining(data.msRemaining);
+        const data: AllQuestionsResponse = JSON.parse(stored);
+        setQuizData(data);
+        setCurrentIndex(data.currentIndex);
+        
+        if (data.questions[data.currentIndex]) {
+          setMsRemaining(data.questions[data.currentIndex].question.timeLimitSeconds * 1000);
+          questionStartTimeRef.current = Date.now();
+        }
         setLoading(false);
       } catch {
         router.push(`/quiz/${slug}`);
@@ -45,15 +47,70 @@ export default function AttemptPage() {
     }
   }, [slug, router]);
 
+  // Tab visibility tracking
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!quizData?.attemptId) return;
+      if (document.hidden) {
+        logIntegrityEvent(quizData.attemptId, 'TAB_HIDDEN');
+      } else {
+        logIntegrityEvent(quizData.attemptId, 'TAB_VISIBLE');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [quizData?.attemptId]);
+
+  // Beforeunload warning
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, []);
+
+  const advanceQuestion = useCallback((nextIndex: number) => {
+    if (!quizData) return;
+    
+    if (nextIndex >= quizData.questions.length) {
+      localStorage.removeItem(`quiz_current_${slug}`);
+      router.push(`/quiz/${slug}/complete`);
+      return;
+    }
+
+    const nextData = { ...quizData, currentIndex: nextIndex };
+    setQuizData(nextData);
+    setCurrentIndex(nextIndex);
+    setSelectedOption(null);
+    setMsRemaining(quizData.questions[nextIndex].question.timeLimitSeconds * 1000);
+    setAnimKey(prev => prev + 1);
+    questionStartTimeRef.current = Date.now();
+    
+    localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(nextData));
+  }, [quizData, slug, router]);
+
+  const handleTimeout = useCallback(() => {
+    if (!quizData) return;
+    
+    const currentQ = quizData.questions[currentIndex];
+    if (!currentQ) return;
+
+    // Fire in background
+    timeoutQuestion(quizData.attemptId, currentQ.question.id).catch(console.error);
+
+    advanceQuestion(currentIndex + 1);
+  }, [quizData, currentIndex, advanceQuestion]);
+
   // Timer countdown
   useEffect(() => {
-    if (!questionData || confirmed) return;
+    if (!quizData) return;
 
     timerRef.current = setInterval(() => {
       setMsRemaining(prev => {
         const next = prev - 100;
         if (next <= 0) {
-          // Timeout
           if (timerRef.current) clearInterval(timerRef.current);
           handleTimeout();
           return 0;
@@ -65,102 +122,33 @@ export default function AttemptPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questionData, confirmed]);
+  }, [quizData, currentIndex, handleTimeout]);
 
-  // Tab visibility tracking
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (!attemptIdRef.current) return;
-      if (document.hidden) {
-        logIntegrityEvent(attemptIdRef.current, 'TAB_HIDDEN');
-      } else {
-        logIntegrityEvent(attemptIdRef.current, 'TAB_VISIBLE');
-      }
-    };
+  const handleSelectOption = (optionId: string) => {
+    if (!quizData) return;
+    const currentQ = quizData.questions[currentIndex];
+    if (!currentQ) return;
 
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, []);
-
-  // Beforeunload warning
-  useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-    };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
-  }, []);
-
-  const handleTimeout = useCallback(async () => {
-    if (!questionData || submitting) return;
-    setSubmitting(true);
-
-    const result = await timeoutQuestion(attemptIdRef.current, questionData.question.id);
-
-    if ('error' in result) {
-      setSubmitting(false);
-      return;
-    }
-
-    if (result.completed) {
-      localStorage.removeItem(`quiz_current_${slug}`);
-      router.push(`/quiz/${slug}/complete`);
-      return;
-    }
-
-    if (result.nextQuestion) {
-      loadNextQuestion(result.nextQuestion);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [questionData, submitting]);
-
-  const handleSelectOption = async (optionId: string) => {
-    if (confirmed || submitting || !questionData) return;
+    // Calculate time taken
+    const timeTakenMs = Date.now() - questionStartTimeRef.current;
     setSelectedOption(optionId);
-    setConfirmed(true);
-    setSubmitting(true);
 
     // Stop timer
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const result = await submitAnswer(
-      attemptIdRef.current,
-      questionData.question.id,
-      optionId
-    );
+    // Fire in background
+    submitAnswer(
+      quizData.attemptId,
+      currentQ.question.id,
+      optionId,
+      timeTakenMs
+    ).catch(console.error);
 
-    if ('error' in result) {
-      setSubmitting(false);
-      setConfirmed(false);
-      return;
-    }
-
-    if (result.completed) {
-      localStorage.removeItem(`quiz_current_${slug}`);
-      router.push(`/quiz/${slug}/complete`);
-      return;
-    }
-
-    if (result.nextQuestion) {
-      loadNextQuestion(result.nextQuestion);
-    }
+    // Advance instantly (0ms delay)
+    advanceQuestion(currentIndex + 1);
   };
 
-  const loadNextQuestion = (next: CurrentQuestionResponse) => {
-    // Shorter delay for a snappy feel
-    setTimeout(() => {
-      setQuestionData(next);
-      setMsRemaining(next.msRemaining);
-      setSelectedOption(null);
-      setConfirmed(false);
-      setSubmitting(false);
-      setAnimKey(prev => prev + 1);
-      localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(next));
-    }, 50);
-  };
-
-  if (loading || !questionData) {
+  if (loading || !quizData || !quizData.questions[currentIndex]) {
     return (
       <div className="quiz-container">
         <div className="quiz-card">
@@ -173,7 +161,9 @@ export default function AttemptPage() {
     );
   }
 
-  const { question, options } = questionData;
+  const currentQ = quizData.questions[currentIndex];
+  const { question, options } = currentQ;
+  
   const timerState = getTimerState(msRemaining);
   const progress = (question.questionNumber / question.totalQuestions) * 100;
   const secondsLeft = Math.ceil(msRemaining / 1000);
@@ -185,7 +175,7 @@ export default function AttemptPage() {
         <div className="quiz-header">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-muted">
-              {questionData.question.questionNumber > 0 ? 'Quiz' : ''}
+              Quiz
             </span>
           </div>
           <div className="flex items-center justify-between mb-3">
@@ -226,7 +216,6 @@ export default function AttemptPage() {
                   key={option.id}
                   className={`option-card ${selectedOption === option.id ? 'option-card-selected' : ''}`}
                   onClick={() => handleSelectOption(option.id)}
-                  disabled={confirmed || submitting}
                 >
                   <span className="option-letter">{OPTION_LETTERS[idx]}</span>
                   <span>{option.text}</span>
@@ -235,13 +224,6 @@ export default function AttemptPage() {
             </div>
           </div>
         </div>
-
-        {/* Optional: Visual loading state for fast transitions */}
-        {submitting && (
-          <div style={{ textAlign: 'center', margin: 'var(--space-2) 0', color: 'var(--muted)', fontSize: 'var(--font-size-sm)' }}>
-            Loading next question...
-          </div>
-        )}
       </div>
     </div>
   );
