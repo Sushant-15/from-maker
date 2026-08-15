@@ -238,10 +238,17 @@ export async function deleteQuiz(quizId: string) {
   await getAdminUser();
   const db = await createServiceClient();
 
-  // Soft delete
+  // Hard Delete: Wipe out all related data permanently
+  // 1. Delete attempts (cascades to answers and integrity_events)
+  await db.from('attempts').delete().eq('quiz_id', quizId);
+  
+  // 2. Delete questions (cascades to options)
+  await db.from('questions').delete().eq('quiz_id', quizId);
+
+  // 3. Delete the quiz itself
   const { error } = await db
     .from('quizzes')
-    .update({ deleted_at: new Date().toISOString() })
+    .delete()
     .eq('id', quizId);
 
   if (error) throw new Error(error.message);
