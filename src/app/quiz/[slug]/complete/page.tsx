@@ -42,9 +42,28 @@ export default function CompletePage() {
   if (loading) {
     return (
       <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body text-center p-8">
-            <div className="skeleton skeleton-title" style={{ margin: '0 auto' }} />
+        <div className="quiz-card animate-slide-up">
+          <div className="quiz-body text-center" style={{ padding: 'var(--space-12) var(--space-6)' }}>
+            <div className="spinner" style={{ 
+              margin: '0 auto var(--space-6)', 
+              width: '48px', 
+              height: '48px', 
+              border: '4px solid var(--border)',
+              borderTopColor: 'var(--primary)',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite' 
+            }} />
+            <style>{`
+              @keyframes spin {
+                to { transform: rotate(360deg); }
+              }
+            `}</style>
+            <h2 style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--space-2)' }}>
+              Calculating your score...
+            </h2>
+            <p className="text-muted text-sm">
+              Please wait while we finalize your results.
+            </p>
           </div>
         </div>
       </div>
