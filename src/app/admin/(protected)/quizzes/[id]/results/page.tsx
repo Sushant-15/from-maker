@@ -101,12 +101,12 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
             <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
             {!liveModeEnabled ? (
               <button 
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-2"
                 onClick={() => setLiveModeEnabled(true)}
                 style={{
-                  height: '24px',
-                  padding: '0 10px',
-                  borderRadius: '12px',
+                  height: '28px',
+                  padding: '0 12px',
+                  borderRadius: '14px',
                   fontSize: '11px',
                   fontWeight: 600,
                   background: 'linear-gradient(135deg, #8b008b, #ba15ba)',
@@ -130,7 +130,7 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
               </button>
             ) : (
               <button 
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full cursor-pointer" 
+                className="flex items-center gap-2 rounded-full cursor-pointer" 
                 onClick={() => setLiveModeEnabled(false)}
                 title="Click to disconnect"
                 style={{ 
@@ -143,7 +143,8 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                   boxShadow: isLive ? '0 0 10px rgba(34, 197, 94, 0.2)' : 'none',
                   transition: 'all 0.2s ease',
                   cursor: 'pointer',
-                  height: '24px'
+                  height: '28px',
+                  padding: '0 12px'
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)';
