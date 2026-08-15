@@ -41,27 +41,14 @@ export default function CompletePage() {
 
   if (loading) {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card animate-slide-up">
-          <div className="quiz-body text-center" style={{ padding: 'var(--space-12) var(--space-6)' }}>
-            <div className="spinner" style={{ 
-              margin: '0 auto var(--space-6)', 
-              width: '48px', 
-              height: '48px', 
-              border: '4px solid var(--border)',
-              borderTopColor: 'var(--primary)',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite' 
-            }} />
-            <style>{`
-              @keyframes spin {
-                to { transform: rotate(360deg); }
-              }
-            `}</style>
-            <h2 style={{ fontSize: 'var(--font-size-xl)', marginBottom: 'var(--space-2)' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-fuchsia-600 mx-auto mb-6" />
+            <h2 className="text-xl font-bold text-slate-900 mb-2">
               Calculating your score...
             </h2>
-            <p className="text-muted text-sm">
+            <p className="text-slate-500 text-sm">
               Please wait while we finalize your results.
             </p>
           </div>
@@ -71,47 +58,42 @@ export default function CompletePage() {
   }
 
   return (
-    <div className="quiz-container">
-      <div className="quiz-card animate-slide-up">
-        <div className="quiz-body text-center" style={{ padding: 'var(--space-10) var(--space-6)' }}>
-          <div style={{ fontSize: '4rem', marginBottom: 'var(--space-4)' }}>🎉</div>
-          <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-2)' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+      <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="p-10 text-center">
+          <div className="text-6xl mb-6">🎉</div>
+          <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">
             Quiz Completed!
           </h2>
 
           {completion?.showResults && completion.result ? (
             <>
-              <p className="text-muted mb-6">
-                Thank you, <strong>{completion.result.participantName}</strong>.
+              <p className="text-slate-500 mb-8">
+                Thank you, <strong className="text-slate-900">{completion.result.participantName}</strong>.
               </p>
 
-              <div className="divider" />
+              <div className="h-px bg-slate-100 w-full mb-8" />
 
-              <div className="kpi-grid" style={{ textAlign: 'center', maxWidth: 360, margin: '0 auto' }}>
-                <div className="kpi-card">
-                  <span className="kpi-label">Score</span>
-                  <span className="kpi-value" style={{ color: 'var(--primary)' }}>
-                    {completion.result.score}/{completion.result.totalQuestions}
+              <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-6">
+                <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Score</span>
+                  <span className="text-3xl font-black text-fuchsia-600 tabular-nums">
+                    {completion.result.score}<span className="text-lg text-slate-400">/{completion.result.totalQuestions}</span>
                   </span>
                 </div>
-                <div className="kpi-card">
-                  <span className="kpi-label">Accuracy</span>
-                  <span className="kpi-value">{completion.result.percentage}%</span>
+                <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Accuracy</span>
+                  <span className="text-3xl font-black text-slate-900 tabular-nums">{completion.result.percentage}%</span>
                 </div>
               </div>
 
-              <div className="mt-4" style={{
-                background: 'var(--background-alt)',
-                padding: 'var(--space-3) var(--space-4)',
-                borderRadius: 'var(--radius-lg)',
-                display: 'inline-block',
-              }}>
-                <span className="text-sm text-muted">Time: </span>
-                <span className="font-bold">{formatDuration(completion.result.totalTimeMs)}</span>
+              <div className="inline-flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
+                <span className="text-sm font-medium text-slate-500">Total Time: </span>
+                <span className="font-bold text-slate-900 tabular-nums">{formatDuration(completion.result.totalTimeMs)}</span>
               </div>
             </>
           ) : (
-            <p className="text-muted">
+            <p className="text-slate-500">
               Your response has been successfully submitted.<br />
               Thank you for participating.
             </p>

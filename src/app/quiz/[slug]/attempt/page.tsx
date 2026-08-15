@@ -150,11 +150,11 @@ export default function AttemptPage() {
 
   if (loading || !quizData || !quizData.questions[currentIndex]) {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body text-center p-8">
-            <div className="skeleton skeleton-title" style={{ margin: '0 auto' }} />
-            <div className="skeleton" style={{ height: 40, width: '50%', margin: '1rem auto' }} />
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[520px] bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-8 text-center">
+            <div className="animate-pulse bg-slate-200 h-8 w-1/2 mx-auto mb-4 rounded" />
+            <div className="animate-pulse bg-slate-200 h-40 w-full mx-auto rounded-2xl" />
           </div>
         </div>
       </div>
@@ -168,59 +168,71 @@ export default function AttemptPage() {
   const progress = (question.questionNumber / question.totalQuestions) * 100;
   const secondsLeft = Math.ceil(msRemaining / 1000);
 
+  // Derive timer colors
+  const timerColorClass = timerState === 'normal' ? 'text-slate-900' : timerState === 'warning' ? 'text-amber-500 animate-pulse' : 'text-red-500 animate-pulse';
+
   return (
-    <div className="quiz-container">
-      <div className="quiz-card" style={{ maxWidth: 520 }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+      <div className="w-full max-w-[520px] bg-white rounded-3xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="quiz-header">
+        <div className="p-5 md:p-6 border-b border-slate-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-muted">
+            <span className="text-sm font-semibold text-slate-500">
               Quiz
             </span>
           </div>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium text-slate-900">
               Question {question.questionNumber} / {question.totalQuestions}
             </span>
-            <span className="text-xs text-muted">{Math.round(progress)}%</span>
+            <span className="text-xs text-slate-500 font-bold">{Math.round(progress)}%</span>
           </div>
-          <div className="progress-bar">
-            <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-full bg-fuchsia-600 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         </div>
 
         {/* Timer */}
-        <div style={{ padding: 'var(--space-4) var(--space-6)', textAlign: 'center' }}>
-          <div className={`timer timer-${timerState}`}>
+        <div className="px-6 py-4 text-center bg-white border-b border-slate-50">
+          <div className={`text-4xl md:text-5xl font-black tabular-nums tracking-tight transition-colors ${timerColorClass}`}>
             {String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:{String(secondsLeft % 60).padStart(2, '0')}
           </div>
         </div>
 
         {/* Question */}
-        <div className="quiz-body" key={animKey}>
-          <div className="animate-slide-question">
-            <div className="card mb-6" style={{
-              background: 'var(--background-alt)',
-              border: 'none',
-              padding: 'var(--space-5)',
-            }}>
-              <p className="font-semibold" style={{ fontSize: 'var(--font-size-lg)', lineHeight: 1.5 }}>
+        <div className="p-5 md:p-6" key={animKey}>
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="bg-slate-50 rounded-2xl p-5 md:p-6 mb-6">
+              <p className="text-lg font-semibold text-slate-900 leading-relaxed">
                 {question.text}
               </p>
             </div>
 
             {/* Options */}
             <div className="flex flex-col gap-3">
-              {options.map((option, idx) => (
-                <button
-                  key={option.id}
-                  className={`option-card ${selectedOption === option.id ? 'option-card-selected' : ''}`}
-                  onClick={() => handleSelectOption(option.id)}
-                >
-                  <span className="option-letter">{OPTION_LETTERS[idx]}</span>
-                  <span>{option.text}</span>
-                </button>
-              ))}
+              {options.map((option, idx) => {
+                const isSelected = selectedOption === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    className={`w-full p-4 md:p-5 border-2 rounded-2xl cursor-pointer flex items-center gap-4 text-left font-medium transition-all hover:-translate-y-px hover:shadow-sm ${
+                      isSelected
+                        ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-900 ring-4 ring-fuchsia-500/10'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-fuchsia-500 hover:bg-fuchsia-50'
+                    }`}
+                    onClick={() => handleSelectOption(option.id)}
+                  >
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 transition-colors ${
+                      isSelected
+                        ? 'bg-fuchsia-600 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {OPTION_LETTERS[idx]}
+                    </span>
+                    <span>{option.text}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

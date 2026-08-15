@@ -91,26 +91,26 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body" style={{ padding: 'var(--space-8) var(--space-6)' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-8">
             <div className="text-center">
-              <div className="skeleton" style={{ width: 48, height: 48, borderRadius: '50%', margin: '0 auto var(--space-3)' }} />
-              <div className="skeleton skeleton-title" style={{ margin: '0 auto var(--space-2)', height: 32, width: '60%' }} />
-              <div className="skeleton skeleton-text" style={{ margin: '0 auto var(--space-6)', width: '80%' }} />
+              <div className="animate-pulse bg-slate-200 w-12 h-12 rounded-full mx-auto mb-3" />
+              <div className="animate-pulse bg-slate-200 h-8 w-[60%] mx-auto mb-2 rounded" />
+              <div className="animate-pulse bg-slate-200 h-4 w-[80%] mx-auto mb-6 rounded" />
             </div>
 
             <div className="flex justify-center gap-4 mb-6">
-              <div className="skeleton" style={{ flex: 1, height: 64, borderRadius: 'var(--radius-lg)' }} />
-              <div className="skeleton" style={{ flex: 1, height: 64, borderRadius: 'var(--radius-lg)' }} />
+              <div className="animate-pulse bg-slate-200 flex-1 h-16 rounded-xl" />
+              <div className="animate-pulse bg-slate-200 flex-1 h-16 rounded-xl" />
             </div>
 
-            <div className="form-group">
-              <div className="skeleton" style={{ width: 80, height: 16, marginBottom: 8 }} />
-              <div className="skeleton" style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)' }} />
+            <div className="mb-5">
+              <div className="animate-pulse bg-slate-200 w-20 h-4 mb-2 rounded" />
+              <div className="animate-pulse bg-slate-200 w-full h-12 rounded-xl" />
             </div>
 
-            <div className="skeleton" style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)', marginTop: 'var(--space-2)' }} />
+            <div className="animate-pulse bg-slate-200 w-full h-12 rounded-xl mt-2" />
           </div>
         </div>
       </div>
@@ -119,12 +119,12 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
 
   if (!quiz) {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body text-center" style={{ padding: 'var(--space-12)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🔍</div>
-            <h2>Quiz Not Found</h2>
-            <p className="text-muted mt-2">This quiz doesn&apos;t exist or has been removed.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-12 text-center">
+            <div className="text-5xl mb-4">🔍</div>
+            <h2 className="text-2xl font-bold text-slate-900">Quiz Not Found</h2>
+            <p className="text-slate-500 mt-2">This quiz doesn&apos;t exist or has been removed.</p>
           </div>
         </div>
       </div>
@@ -134,35 +134,35 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
   // ─── UPCOMING ───
   if (quiz.state === 'UPCOMING') {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body text-center" style={{ padding: 'var(--space-8) var(--space-6)' }}>
-            <div style={{ fontSize: '2rem', marginBottom: 'var(--space-4)' }}>🧠</div>
-            <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-2)' }}>{quiz.title}</h2>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-8 text-center">
+            <div className="text-4xl mb-4">🧠</div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">{quiz.title}</h2>
             {quiz.description && (
-              <p className="text-muted text-sm mb-6">{quiz.description}</p>
+              <p className="text-slate-500 text-sm mb-6">{quiz.description}</p>
             )}
 
-            <p className="text-sm text-muted font-medium mb-4">Quiz starts in</p>
-            <div className="countdown mb-6">
-              <div className="countdown-segment">
-                <span className="countdown-value">{countdown.hours}</span>
-                <span className="countdown-label">Hours</span>
+            <p className="text-sm text-slate-500 font-medium mb-4">Quiz starts in</p>
+            <div className="flex justify-center items-center gap-4 mb-6">
+              <div className="flex flex-col items-center">
+                <span className="text-3xl font-black text-slate-900 tabular-nums">{countdown.hours}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hours</span>
               </div>
-              <span className="countdown-separator">:</span>
-              <div className="countdown-segment">
-                <span className="countdown-value">{countdown.minutes}</span>
-                <span className="countdown-label">Min</span>
+              <span className="text-2xl font-bold text-slate-300 pb-4">:</span>
+              <div className="flex flex-col items-center">
+                <span className="text-3xl font-black text-slate-900 tabular-nums">{countdown.minutes}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Min</span>
               </div>
-              <span className="countdown-separator">:</span>
-              <div className="countdown-segment">
-                <span className="countdown-value">{countdown.seconds}</span>
-                <span className="countdown-label">Sec</span>
+              <span className="text-2xl font-bold text-slate-300 pb-4">:</span>
+              <div className="flex flex-col items-center">
+                <span className="text-3xl font-black text-slate-900 tabular-nums">{countdown.seconds}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sec</span>
               </div>
             </div>
 
-            <div className="divider" />
-            <div className="flex justify-center gap-6 text-sm text-muted">
+            <div className="h-px bg-slate-100 my-6 w-full" />
+            <div className="flex justify-center gap-6 text-sm text-slate-500">
               <span>{quiz.question_count} Questions</span>
               <span>Timed Quiz</span>
             </div>
@@ -175,12 +175,12 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
   // ─── ENDED ───
   if (quiz.state === 'ENDED') {
     return (
-      <div className="quiz-container">
-        <div className="quiz-card">
-          <div className="quiz-body text-center" style={{ padding: 'var(--space-12)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>⏰</div>
-            <h2>Quiz Has Ended</h2>
-            <p className="text-muted mt-2">This quiz is no longer accepting participants.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+        <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-12 text-center">
+            <div className="text-5xl mb-4">⏰</div>
+            <h2 className="text-2xl font-bold text-slate-900">Quiz Has Ended</h2>
+            <p className="text-slate-500 mt-2">This quiz is no longer accepting participants.</p>
           </div>
         </div>
       </div>
@@ -189,46 +189,39 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
 
   // ─── ACTIVE ───
   return (
-    <div className="quiz-container">
-      <div className="quiz-card">
-        <div className="quiz-body" style={{ padding: 'var(--space-8) var(--space-6)' }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-pink-50">
+      <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300">
+        <div className="p-8">
           <div className="text-center">
-            <div style={{ fontSize: '2rem', marginBottom: 'var(--space-3)' }}>🧠</div>
-            <h2 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-2)' }}>{quiz.title}</h2>
+            <div className="text-4xl mb-3">🧠</div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">{quiz.title}</h2>
             {quiz.description && (
-              <p className="text-muted text-sm mb-6">{quiz.description}</p>
+              <p className="text-slate-500 text-sm mb-6">{quiz.description}</p>
             )}
           </div>
 
           <div className="flex justify-center gap-4 mb-6">
-            <div className="card" style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', flex: 1 }}>
-              <div className="font-bold text-lg">{quiz.question_count}</div>
-              <div className="text-xs text-muted">Questions</div>
+            <div className="flex-1 bg-white border border-slate-200 rounded-xl p-3 text-center shadow-sm">
+              <div className="font-bold text-lg text-slate-900">{quiz.question_count}</div>
+              <div className="text-xs text-slate-500">Questions</div>
             </div>
-            <div className="card" style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', flex: 1 }}>
-              <div className="font-bold text-lg">⏱</div>
-              <div className="text-xs text-muted">Timed</div>
+            <div className="flex-1 bg-white border border-slate-200 rounded-xl p-3 text-center shadow-sm">
+              <div className="font-bold text-lg text-slate-900">⏱</div>
+              <div className="text-xs text-slate-500">Timed</div>
             </div>
           </div>
 
           {error && (
-            <div style={{
-              background: 'var(--danger-light)',
-              color: 'var(--danger-foreground)',
-              padding: 'var(--space-3) var(--space-4)',
-              borderRadius: 'var(--radius-lg)',
-              fontSize: 'var(--font-size-sm)',
-              marginBottom: 'var(--space-4)',
-            }}>
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-xl text-sm mb-4">
               {error}
             </div>
           )}
 
-          <div className="form-group">
-            <label className="label" htmlFor="participant-name">Your name</label>
+          <div className="mb-5">
+            <label className="block text-sm font-semibold text-slate-900 mb-2" htmlFor="participant-name">Your name</label>
             <input
               id="participant-name"
-              className="input"
+              className="w-full px-4 py-3 font-sans text-base text-slate-900 bg-white border border-slate-200 rounded-xl transition-all focus:border-fuchsia-500 focus:ring-4 focus:ring-fuchsia-500/10 outline-none placeholder:text-slate-400"
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -239,15 +232,14 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
           </div>
 
           <button
-            className="btn btn-primary btn-lg w-full"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold rounded-2xl w-full transition-all hover:-translate-y-px hover:shadow-lg hover:shadow-fuchsia-500/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             onClick={handleStart}
             disabled={starting}
-            style={{ marginTop: 'var(--space-2)' }}
           >
             {starting ? 'Starting...' : 'Start Quiz →'}
           </button>
 
-          <p className="text-xs text-muted text-center mt-4">
+          <p className="text-xs text-slate-500 text-center mt-4">
             By continuing, your answers and timing will be recorded.
           </p>
         </div>
