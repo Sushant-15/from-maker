@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getQuizResults, exportQuizCSV } from '@/app/actions/results';
+import { createClient } from '@/lib/supabase/client';
 import { formatDuration } from '@/lib/utils';
 import type { LeaderboardEntry } from '@/types';
 
@@ -11,6 +12,7 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   const [quizTitle, setQuizTitle] = useState('');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
   const [sortBy, setSortBy] = useState<'score' | 'time' | 'name'>('score');
 
   useEffect(() => {
@@ -30,6 +32,39 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!quizId) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`results-${quizId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'attempts',
+          filter: `quiz_id=eq.${quizId}`,
+        },
+        (payload) => {
+          if (payload.new.status === 'COMPLETED') {
+            loadResults(quizId);
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setIsLive(true);
+        } else {
+          setIsLive(false);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [quizId]);
 
   const handleExport = async () => {
     const csv = await exportQuizCSV(quizId);
@@ -52,9 +87,35 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div>
+      <style>{`
+        @keyframes customPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.2); }
+        }
+      `}</style>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Results</h1>
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ 
+              background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+              fontSize: '11px',
+              fontWeight: 600,
+              color: isLive ? 'var(--success)' : 'var(--danger)',
+              textTransform: 'uppercase'
+            }}>
+              <span style={{
+                display: 'block',
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: isLive ? 'var(--success)' : 'var(--danger)',
+                animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none'
+              }} />
+              {isLive ? 'Live' : 'Offline'}
+            </div>
+          </div>
           <p className="page-subtitle">{quizTitle}</p>
         </div>
         <div className="flex gap-3">
