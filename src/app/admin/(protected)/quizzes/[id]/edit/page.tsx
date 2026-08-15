@@ -24,11 +24,11 @@ export default async function EditQuizPage({ params }: { params: Promise<{ id: s
   };
 
   return (
-    <div>
-      <div className="page-header">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="page-title">Edit Quiz</h1>
-          <p className="page-subtitle">{quiz.title}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Edit Quiz</h1>
+          <p className="text-sm text-slate-500 mt-1">{quiz.title}</p>
         </div>
       </div>
       <QuizBuilder mode="edit" quizId={id} initialData={initialData} isLocked={isLocked} />

@@ -88,45 +88,15 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   });
 
   return (
-    <div>
-      <style>{`
-        @keyframes customPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.2); }
-        }
-      `}</style>
-      <div className="page-header">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <div className="flex items-center mb-1" style={{ gap: '12px' }}>
-            <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Results</h1>
             {!liveModeEnabled ? (
               <button 
                 onClick={() => setLiveModeEnabled(true)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  height: '28px',
-                  padding: '0 12px',
-                  borderRadius: '9999px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  background: 'linear-gradient(135deg, #8b008b, #ba15ba)',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(139, 0, 139, 0.3)',
-                  transition: 'all 0.2s ease',
-                  textTransform: 'uppercase',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(139, 0, 139, 0.5)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(139, 0, 139, 0.3)';
-                }}
+                className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-xs font-bold text-white bg-gradient-to-br from-fuchsia-800 to-fuchsia-600 shadow shadow-fuchsia-800/30 hover:-translate-y-px hover:shadow-md hover:shadow-fuchsia-800/40 transition-all uppercase focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 cursor-pointer"
               >
                 📡 Go Live
               </button>
@@ -134,72 +104,45 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
               <button 
                 onClick={() => setLiveModeEnabled(false)}
                 title="Click to disconnect"
-                style={{ 
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                  border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: isLive ? 'var(--success)' : 'var(--danger)',
-                  textTransform: 'uppercase',
-                  boxShadow: isLive ? '0 0 10px rgba(34, 197, 94, 0.2)' : 'none',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  height: '28px',
-                  padding: '0 12px',
-                  borderRadius: '9999px'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
-                }}
+                className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-bold uppercase transition-all shadow-sm cursor-pointer border ${isLive ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/20 shadow-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/30 hover:bg-red-500/20'}`}
               >
-                <span style={{
-                  display: 'block',
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: isLive ? 'var(--success)' : 'var(--danger)',
-                  animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none',
-                  boxShadow: isLive ? '0 0 8px var(--success)' : 'none'
-                }} />
+                <span className="relative flex h-2 w-2">
+                  {isLive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${isLive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)]' : 'bg-red-500'}`}></span>
+                </span>
                 {isLive ? 'Live' : 'Connecting'}
               </button>
             )}
           </div>
-          <p className="page-subtitle">{quizTitle}</p>
+          <p className="text-sm text-slate-500 mt-1">{quizTitle}</p>
         </div>
         <div className="flex gap-3">
-          <Link href={`/admin/quizzes/${quizId}/analytics`} className="btn btn-secondary">
+          <Link href={`/admin/quizzes/${quizId}/analytics`} className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
             📊 Analytics
           </Link>
-          <button className="btn btn-primary" onClick={handleExport} disabled={leaderboard.length === 0}>
+          <button className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-sm font-semibold rounded-xl transition-all shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 disabled:opacity-50" onClick={handleExport} disabled={leaderboard.length === 0}>
             📥 Export CSV
           </button>
         </div>
       </div>
 
       {/* Summary */}
-      <div className="kpi-grid" style={{ marginBottom: 'var(--space-6)' }}>
-        <div className="kpi-card">
-          <span className="kpi-label">Participants</span>
-          <span className="kpi-value">{leaderboard.length}</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Participants</span>
+          <span className="text-3xl font-black tabular-nums tracking-tight text-slate-900">{leaderboard.length}</span>
         </div>
         {leaderboard.length > 0 && (
           <>
-            <div className="kpi-card">
-              <span className="kpi-label">Highest Score</span>
-              <span className="kpi-value" style={{ color: 'var(--success)' }}>
-                {sortedLeaderboard[0]?.score}/{sortedLeaderboard[0]?.totalQuestions}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Highest Score</span>
+              <span className="text-3xl font-black tabular-nums tracking-tight text-emerald-500">
+                {sortedLeaderboard[0]?.score}<span className="text-lg text-emerald-500/50">/{sortedLeaderboard[0]?.totalQuestions}</span>
               </span>
             </div>
-            <div className="kpi-card">
-              <span className="kpi-label">Fastest Time</span>
-              <span className="kpi-value">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fastest Time</span>
+              <span className="text-3xl font-black tabular-nums tracking-tight text-slate-900">
                 {formatDuration(Math.min(...leaderboard.map(l => l.totalTimeMs)))}
               </span>
             </div>
@@ -208,12 +151,12 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
       </div>
 
       {/* Sort */}
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-sm text-muted font-medium">Sort by:</span>
+      <div className="flex items-center gap-3 mb-6">
+        <span className="text-sm text-slate-500 font-medium">Sort by:</span>
         {(['score', 'time', 'name'] as const).map(s => (
           <button
             key={s}
-            className={`btn btn-sm ${sortBy === s ? 'btn-primary' : 'btn-ghost'}`}
+            className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-1 ${sortBy === s ? 'bg-fuchsia-600 text-white hover:bg-fuchsia-700 shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900'}`}
             onClick={() => setSortBy(s)}
           >
             {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -223,49 +166,46 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
 
       {loading ? (
         <div className="flex flex-col gap-3">
-          {[1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 48 }} />)}
+          {[1, 2, 3].map(i => <div key={i} className="animate-pulse bg-white border border-slate-200 rounded-2xl h-16 w-full shadow-sm" />)}
         </div>
       ) : leaderboard.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🏆</div>
-          <div className="empty-state-title">No results yet</div>
-          <div className="empty-state-text">Share the quiz link and wait for participants to complete it.</div>
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-white border border-slate-200 border-dashed rounded-3xl">
+          <div className="text-4xl mb-4">🏆</div>
+          <div className="text-xl font-bold text-slate-900 mb-2">No results yet</div>
+          <div className="text-slate-500">Share the quiz link and wait for participants to complete it.</div>
         </div>
       ) : (
-        <div className="table-container">
-          <table className="table">
+        <div className="w-full overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm mb-12">
+          <table className="w-full text-left text-sm text-slate-600">
             <thead>
               <tr>
-                <th style={{ width: 50 }}>#</th>
-                <th>Participant</th>
-                <th>Score</th>
-                <th>Accuracy</th>
-                <th>Time</th>
-                <th>Details</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200 w-[50px]">#</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200">Participant</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200">Score</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200">Accuracy</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200">Time</th>
+                <th className="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider px-6 py-4 border-b border-slate-200 text-right">Details</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {sortedLeaderboard.map((entry, idx) => (
-                <tr key={entry.attemptId}>
-                  <td>
-                    <span className="font-bold" style={{
-                      color: idx === 0 ? '#f59e0b' : idx === 1 ? '#94a3b8' : idx === 2 ? '#cd7f32' : 'var(--foreground)',
-                      fontSize: idx < 3 ? 'var(--font-size-lg)' : 'var(--font-size-base)',
-                    }}>
+                <tr key={entry.attemptId} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-6 py-4 align-middle">
+                    <span className={`font-bold ${idx < 3 ? 'text-lg' : 'text-base'} ${idx === 0 ? 'text-amber-500' : idx === 1 ? 'text-slate-400' : idx === 2 ? 'text-amber-700' : 'text-slate-900'}`}>
                       {idx < 3 ? ['🥇', '🥈', '🥉'][idx] : idx + 1}
                     </span>
                   </td>
-                  <td className="font-semibold">{entry.participantName}</td>
-                  <td>
-                    <span className="font-bold">{entry.score}</span>
-                    <span className="text-muted">/{entry.totalQuestions}</span>
+                  <td className="px-6 py-4 align-middle font-semibold text-slate-900">{entry.participantName}</td>
+                  <td className="px-6 py-4 align-middle tabular-nums">
+                    <span className="font-bold text-slate-900">{entry.score}</span>
+                    <span className="text-slate-400">/{entry.totalQuestions}</span>
                   </td>
-                  <td>{entry.percentage}%</td>
-                  <td className="font-medium">{formatDuration(entry.totalTimeMs)}</td>
-                  <td>
+                  <td className="px-6 py-4 align-middle tabular-nums">{entry.percentage}%</td>
+                  <td className="px-6 py-4 align-middle font-medium text-slate-700 tabular-nums">{formatDuration(entry.totalTimeMs)}</td>
+                  <td className="px-6 py-4 align-middle text-right">
                     <Link
                       href={`/admin/quizzes/${quizId}/results/${entry.attemptId}`}
-                      className="btn btn-ghost btn-sm"
+                      className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-fuchsia-500/20"
                     >
                       View →
                     </Link>
