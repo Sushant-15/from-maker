@@ -97,17 +97,19 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
       `}</style>
       <div className="page-header">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center mb-1" style={{ gap: '12px' }}>
             <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
             {!liveModeEnabled ? (
               <button 
-                className="flex items-center gap-2"
                 onClick={() => setLiveModeEnabled(true)}
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   height: '28px',
                   padding: '0 12px',
-                  borderRadius: '14px',
-                  fontSize: '11px',
+                  borderRadius: '9999px',
+                  fontSize: '12px',
                   fontWeight: 600,
                   background: 'linear-gradient(135deg, #8b008b, #ba15ba)',
                   color: 'white',
@@ -130,10 +132,12 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
               </button>
             ) : (
               <button 
-                className="flex items-center gap-2 rounded-full cursor-pointer" 
                 onClick={() => setLiveModeEnabled(false)}
                 title="Click to disconnect"
                 style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                   border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
                   fontSize: '11px',
@@ -144,7 +148,8 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                   transition: 'all 0.2s ease',
                   cursor: 'pointer',
                   height: '28px',
-                  padding: '0 12px'
+                  padding: '0 12px',
+                  borderRadius: '9999px'
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)';
