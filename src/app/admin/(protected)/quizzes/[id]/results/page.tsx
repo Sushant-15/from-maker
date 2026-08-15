@@ -109,20 +109,20 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
                   borderRadius: '14px',
                   fontSize: '12px',
                   fontWeight: 600,
-                  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                  background: 'linear-gradient(135deg, #d946ef, #ec4899)',
                   color: 'white',
                   border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(139, 92, 246, 0.3)',
+                  boxShadow: '0 2px 10px rgba(217, 70, 239, 0.3)',
                   transition: 'all 0.2s ease',
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(139, 92, 246, 0.5)';
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(217, 70, 239, 0.5)';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(139, 92, 246, 0.3)';
+                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(217, 70, 239, 0.3)';
                 }}
               >
                 📡 Go Live
