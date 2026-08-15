@@ -93,9 +93,24 @@ export default function QuizLandingClient({ slug }: { slug: string }) {
     return (
       <div className="quiz-container">
         <div className="quiz-card">
-          <div className="quiz-body text-center">
-            <div className="skeleton skeleton-title" style={{ margin: '0 auto' }} />
-            <div className="skeleton skeleton-text" style={{ width: '80%', margin: '0 auto' }} />
+          <div className="quiz-body" style={{ padding: 'var(--space-8) var(--space-6)' }}>
+            <div className="text-center">
+              <div className="skeleton" style={{ width: 48, height: 48, borderRadius: '50%', margin: '0 auto var(--space-3)' }} />
+              <div className="skeleton skeleton-title" style={{ margin: '0 auto var(--space-2)', height: 32, width: '60%' }} />
+              <div className="skeleton skeleton-text" style={{ margin: '0 auto var(--space-6)', width: '80%' }} />
+            </div>
+
+            <div className="flex justify-center gap-4 mb-6">
+              <div className="skeleton" style={{ flex: 1, height: 64, borderRadius: 'var(--radius-lg)' }} />
+              <div className="skeleton" style={{ flex: 1, height: 64, borderRadius: 'var(--radius-lg)' }} />
+            </div>
+
+            <div className="form-group">
+              <div className="skeleton" style={{ width: 80, height: 16, marginBottom: 8 }} />
+              <div className="skeleton" style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)' }} />
+            </div>
+
+            <div className="skeleton" style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)', marginTop: 'var(--space-2)' }} />
           </div>
         </div>
       </div>
