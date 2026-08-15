@@ -115,13 +115,9 @@ export default function AttemptPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionData, submitting]);
 
-  const handleSelectOption = (optionId: string) => {
-    if (confirmed || submitting) return;
+  const handleSelectOption = async (optionId: string) => {
+    if (confirmed || submitting || !questionData) return;
     setSelectedOption(optionId);
-  };
-
-  const handleConfirm = async () => {
-    if (!selectedOption || !questionData || confirmed || submitting) return;
     setConfirmed(true);
     setSubmitting(true);
 
@@ -131,7 +127,7 @@ export default function AttemptPage() {
     const result = await submitAnswer(
       attemptIdRef.current,
       questionData.question.id,
-      selectedOption
+      optionId
     );
 
     if ('error' in result) {
@@ -152,7 +148,7 @@ export default function AttemptPage() {
   };
 
   const loadNextQuestion = (next: CurrentQuestionResponse) => {
-    // Short delay for transition feel
+    // Shorter delay for a snappy feel
     setTimeout(() => {
       setQuestionData(next);
       setMsRemaining(next.msRemaining);
@@ -161,7 +157,7 @@ export default function AttemptPage() {
       setSubmitting(false);
       setAnimKey(prev => prev + 1);
       localStorage.setItem(`quiz_current_${slug}`, JSON.stringify(next));
-    }, 300);
+    }, 50);
   };
 
   if (loading || !questionData) {
@@ -240,16 +236,12 @@ export default function AttemptPage() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="quiz-footer">
-          <button
-            className="btn btn-primary btn-lg w-full"
-            onClick={handleConfirm}
-            disabled={!selectedOption || confirmed || submitting}
-          >
-            {submitting ? 'Submitting...' : confirmed ? 'Answer Locked ✓' : selectedOption ? 'Confirm Answer →' : 'Select an answer'}
-          </button>
-        </div>
+        {/* Optional: Visual loading state for fast transitions */}
+        {submitting && (
+          <div style={{ textAlign: 'center', margin: 'var(--space-2) 0', color: 'var(--muted)', fontSize: 'var(--font-size-sm)' }}>
+            Loading next question...
+          </div>
+        )}
       </div>
     </div>
   );
