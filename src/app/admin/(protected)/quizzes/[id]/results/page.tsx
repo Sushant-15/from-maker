@@ -13,6 +13,7 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
+  const [liveModeEnabled, setLiveModeEnabled] = useState(false);
   const [sortBy, setSortBy] = useState<'score' | 'time' | 'name'>('score');
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
   };
 
   useEffect(() => {
-    if (!quizId) return;
+    if (!quizId || !liveModeEnabled) return;
 
     const supabase = createClient();
     const channel = supabase
@@ -63,8 +64,9 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
 
     return () => {
       supabase.removeChannel(channel);
+      setIsLive(false);
     };
-  }, [quizId]);
+  }, [quizId, liveModeEnabled]);
 
   const handleExport = async () => {
     const csv = await exportQuizCSV(quizId);
@@ -97,24 +99,39 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ 
-              background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-              border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-              fontSize: '11px',
-              fontWeight: 600,
-              color: isLive ? 'var(--success)' : 'var(--danger)',
-              textTransform: 'uppercase'
-            }}>
-              <span style={{
-                display: 'block',
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: isLive ? 'var(--success)' : 'var(--danger)',
-                animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none'
-              }} />
-              {isLive ? 'Live' : 'Offline'}
-            </div>
+            {!liveModeEnabled ? (
+              <button 
+                className="btn btn-sm btn-ghost flex items-center gap-1.5"
+                onClick={() => setLiveModeEnabled(true)}
+                style={{ height: '24px', fontSize: '11px', padding: '0 8px', borderRadius: 'var(--radius-full)' }}
+              >
+                📡 Go Live
+              </button>
+            ) : (
+              <div 
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full cursor-pointer" 
+                onClick={() => setLiveModeEnabled(false)}
+                title="Click to disconnect"
+                style={{ 
+                  background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                  border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: isLive ? 'var(--success)' : 'var(--danger)',
+                  textTransform: 'uppercase'
+                }}
+              >
+                <span style={{
+                  display: 'block',
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: isLive ? 'var(--success)' : 'var(--danger)',
+                  animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none'
+                }} />
+                {isLive ? 'Live' : 'Connecting...'}
+              </div>
+            )}
           </div>
           <p className="page-subtitle">{quizTitle}</p>
         </div>
