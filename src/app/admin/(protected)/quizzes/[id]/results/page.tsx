@@ -101,36 +101,66 @@ export default function ResultsPage({ params }: { params: Promise<{ id: string }
             <h1 className="page-title" style={{ margin: 0 }}>Results</h1>
             {!liveModeEnabled ? (
               <button 
-                className="btn btn-sm btn-ghost flex items-center gap-1.5"
+                className="btn flex items-center gap-2"
                 onClick={() => setLiveModeEnabled(true)}
-                style={{ height: '24px', fontSize: '11px', padding: '0 8px', borderRadius: 'var(--radius-full)' }}
+                style={{
+                  height: '28px',
+                  padding: '0 12px',
+                  borderRadius: '14px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(139, 92, 246, 0.3)',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(139, 92, 246, 0.5)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(139, 92, 246, 0.3)';
+                }}
               >
                 📡 Go Live
               </button>
             ) : (
-              <div 
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full cursor-pointer" 
+              <button 
+                className="flex items-center gap-2 px-3 py-1 rounded-full cursor-pointer" 
                 onClick={() => setLiveModeEnabled(false)}
                 title="Click to disconnect"
                 style={{ 
                   background: isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                  border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-                  fontSize: '11px',
+                  border: `1px solid ${isLive ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                  fontSize: '12px',
                   fontWeight: 600,
                   color: isLive ? 'var(--success)' : 'var(--danger)',
-                  textTransform: 'uppercase'
+                  textTransform: 'uppercase',
+                  boxShadow: isLive ? '0 0 10px rgba(34, 197, 94, 0.2)' : 'none',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = isLive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)';
                 }}
               >
                 <span style={{
                   display: 'block',
-                  width: 6,
-                  height: 6,
+                  width: 8,
+                  height: 8,
                   borderRadius: '50%',
                   background: isLive ? 'var(--success)' : 'var(--danger)',
-                  animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none'
+                  animation: isLive ? 'customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none',
+                  boxShadow: isLive ? '0 0 8px var(--success)' : 'none'
                 }} />
                 {isLive ? 'Live' : 'Connecting...'}
-              </div>
+              </button>
             )}
           </div>
           <p className="page-subtitle">{quizTitle}</p>
